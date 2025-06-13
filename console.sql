@@ -1,61 +1,52 @@
-CREATE TABLE Countries (
-    CountryId INTEGER PRIMARY KEY AUTOINCREMENT,
-    CountryName TEXT NOT NULL UNIQUE
+CREATE TABLE Customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    full_name NVARCHAR(100),
+    birth_date DATE,
+    gender NVARCHAR(10),
+    email NVARCHAR(100) UNIQUE,
+    country NVARCHAR(50),
+    city NVARCHAR(50)
 );
 
-CREATE TABLE Cities (
-    CityId INTEGER PRIMARY KEY AUTOINCREMENT,
-    CityName TEXT NOT NULL,
-    CountryId INTEGER,
-    FOREIGN KEY (CountryId) REFERENCES Countries(CountryId)
+CREATE TABLE Categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name NVARCHAR(100) UNIQUE
 );
 
-CREATE TABLE Buyers (
-    BuyerId INTEGER PRIMARY KEY AUTOINCREMENT,
-    FullName TEXT NOT NULL,
-    BirthDate TEXT NOT NULL,
-    Gender TEXT CHECK (Gender IN ('M', 'F')) NOT NULL,
-    Email TEXT NOT NULL UNIQUE,
-    CountryId INTEGER,
-    CityId INTEGER,
-    FOREIGN KEY (CountryId) REFERENCES Countries(CountryId),
-    FOREIGN KEY (CityId) REFERENCES Cities(CityId)
-);
-
-CREATE TABLE Sections (
-    SectionId INTEGER PRIMARY KEY AUTOINCREMENT,
-    SectionName TEXT NOT NULL UNIQUE
-);
-
-CREATE TABLE BuyerSections (
-    BuyerId INTEGER,
-    SectionId INTEGER,
-    PRIMARY KEY (BuyerId, SectionId),
-    FOREIGN KEY (BuyerId) REFERENCES Buyers(BuyerId),
-    FOREIGN KEY (SectionId) REFERENCES Sections(SectionId)
+CREATE TABLE CustomerInterests (
+    customer_id INT,
+    category_id INT,
+    PRIMARY KEY (customer_id, category_id),
+    FOREIGN KEY (customer_id) REFERENCES Customers(id),
+    FOREIGN KEY (category_id) REFERENCES Categories(id)
 );
 
 CREATE TABLE Promotions (
-    PromoId INTEGER PRIMARY KEY AUTOINCREMENT,
-    PromoName TEXT NOT NULL,
-    SectionId INTEGER NOT NULL,
-    CountryId INTEGER NOT NULL,
-    StartDate TEXT NOT NULL,
-    EndDate TEXT NOT NULL,
-    FOREIGN KEY (SectionId) REFERENCES Sections(SectionId),
-    FOREIGN KEY (CountryId) REFERENCES Countries(CountryId)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title NVARCHAR(100),
+    description TEXT,
+    category_id INT,
+    country NVARCHAR(50),
+    start_date DATE,
+    end_date DATE,
+    FOREIGN KEY (category_id) REFERENCES Categories(id)
 );
 
-INSERT INTO Countries (CountryName) VALUES ('Україна'), ('Польща');
 
-INSERT INTO Cities (CityName, CountryId) VALUES
-('Київ', 1), ('Львів', 1), ('Варшава', 2);
+INSERT INTO Customers (full_name, birth_date, gender, email, country, city)
+VALUES
+('Іван Петренко', '1990-03-12', 'Чоловік', 'ivan@example.com', 'Україна', 'Львів'),
+('Олена Іваненко', '1985-08-25', 'Жінка', 'olena@example.com', 'Україна', 'Київ');
 
-INSERT INTO Sections (SectionName) VALUES
-('Мобільні телефони'),
-('Ноутбуки'),
-('Кухонна техніка');
+INSERT INTO Categories (name)
+VALUES ('Мобільні телефони'), ('Ноутбуки'), ('Кухонна техніка');
 
-INSERT INTO Promotions (PromoName, SectionId, CountryId, StartDate, EndDate) VALUES
-('Знижки на смартфони', 1, 1, '2025-06-01', '2025-06-30'),
-('Ноутбуки зі знижкою', 2, 2, '2025-06-10', '2025-07-10');
+INSERT INTO CustomerInterests (customer_id, category_id)
+VALUES
+(1, 1), (1, 2),
+(2, 3);
+
+INSERT INTO Promotions (title, description, category_id, country, start_date, end_date)
+VALUES
+('Знижка на iPhone 15', '10% знижка на всі iPhone 15', 1, 'Україна', '2025-06-10', '2025-06-30'),
+('Акція на кухонні блендери', 'Знижки до 30% на блендери Bosch', 3, 'Україна', '2025-06-01', '2025-06-20');
